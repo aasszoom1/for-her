@@ -3,23 +3,104 @@
 <head>
 <meta charset="UTF-8">
 <title>For You 🤍</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #fff5f7, #ffeef2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* กล่องหลัก */
+.container {
+    background: white;
+    width: 380px;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+/* หัวข้อ */
+h2 {
+    margin-bottom: 5px;
+    color: #444;
+}
+
+/* คำอธิบาย */
+.desc {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+/* กล่องพิมพ์ */
+textarea {
+    width: 100%;
+    height: 110px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    padding: 12px;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    transition: 0.2s;
+}
+
+textarea:focus {
+    border-color: #ffb6c1;
+}
+
+/* ปุ่ม */
+button {
+    margin-top: 12px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #ffb6c1;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #ff9eb0;
+}
+
+/* ข้อความตอบ */
+.response {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
+    min-height: 40px;
+    transition: 0.3s;
+}
+</style>
 </head>
 
 <body>
 
-<h3>ที่ตรงนี้มีแค่เธอกับเรา 🤍</h3>
+<div class="container">
+    <h2>ที่ตรงนี้มีแค่เธอกับเรา 🤍</h2>
+    <div class="desc">
+        ไม่ว่าเธอจะเจออะไร โดยเฉพาะเรื่องงาน...เธอไม่ต้องผ่านมันคนเดียวนะ
+    </div>
 
-<textarea id="input" placeholder="พิมพ์..."></textarea>
-<br><br>
-<button onclick="reply()">ส่งให้เรา</button>
+    <textarea id="input" placeholder="วันนี้มันหนักแค่ไหน...เล่าให้เราฟังได้นะ"></textarea>
+    <button onclick="reply()">ส่งให้เรา</button>
 
-<p id="response"></p>
+    <div class="response" id="response"></div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-console.log("RUN OK");
 
 const firebaseConfig = {
   apiKey: "AIzaSyCquKO0dfib9VPLiVw8VoMglElIaaT65Pc",
@@ -32,6 +113,7 @@ const db = getFirestore(app);
 
 window.reply = async function() {
     let text = document.getElementById("input").value;
+    let res = "";
 
     if (text.trim() !== "") {
         await addDoc(collection(db, "messages"), {
@@ -40,7 +122,15 @@ window.reply = async function() {
         });
     }
 
-    document.getElementById("response").innerText = "ส่งแล้วนะ 🤍";
+    if (text.includes("ตกงาน") || text.includes("ไม่มีงาน")) {
+        res = "มันหนักมากเลยใช่ไหม...เราอยู่ข้างเธอนะ 🤍";
+    } else if (text.includes("เหนื่อย") || text.includes("ท้อ")) {
+        res = "ไม่ต้องเก่งตลอดก็ได้นะ พักบ้างก็ได้ 🤍";
+    } else {
+        res = "ขอบคุณที่เล่าให้เราฟังนะ 🤍";
+    }
+
+    document.getElementById("response").innerText = res;
 }
 </script>
 
