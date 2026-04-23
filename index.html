@@ -15,14 +15,12 @@ body {
     height: 100vh;
 }
 
-/* แชท */
 .chat {
     flex: 1;
     padding: 15px;
     overflow-y: auto;
 }
 
-/* บับเบิล */
 .bubble {
     max-width: 70%;
     padding: 10px 14px;
@@ -31,17 +29,9 @@ body {
     font-size: 14px;
 }
 
-.bot {
-    background: white;
-    margin-right: auto;
-}
+.bot { background: white; margin-right: auto; }
+.me { background: #dcf8c6; margin-left: auto; }
 
-.me {
-    background: #dcf8c6;
-    margin-left: auto;
-}
-
-/* input */
 .input-area {
     display: flex;
     padding: 10px;
@@ -64,26 +54,18 @@ button {
     color: white;
     cursor: pointer;
     position: relative;
-    overflow: hidden;
 }
 
 /* 💓 หัวใจ */
 .heart {
     position: absolute;
     color: pink;
-    font-size: 12px;
     animation: floatUp 1s linear forwards;
 }
 
 @keyframes floatUp {
-    from {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(-40px) scale(1.5);
-        opacity: 0;
-    }
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-40px); opacity: 0; }
 }
 
 /* ปุ่มกลางจอ */
@@ -113,18 +95,26 @@ button {
 
 <div class="next-btn" id="nextBtn" onclick="goNext()">ไปต่อ 🤍</div>
 
-<!-- 🎵 เพลง -->
-<audio id="bgm" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<script>
+// 🔥 Firebase config ของคุณ
+const firebaseConfig = {
+  apiKey: "AIzaSyCquKO0dfib9VPLiVw8VoMglElIaaT65Pc",
+  authDomain: "for-you-78a52.firebaseapp.com",
+  projectId: "for-you-78a52"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // ⌨️ พิมพ์ทีละตัว
-function typeText(element, text, speed = 30) {
+function typeText(el, text, speed = 30) {
     let i = 0;
     function typing() {
         if (i < text.length) {
-            element.innerText += text.charAt(i);
+            el.innerText += text[i];
             i++;
             setTimeout(typing, speed);
         }
@@ -132,7 +122,6 @@ function typeText(element, text, speed = 30) {
     typing();
 }
 
-// เพิ่มบับเบิล
 function addBubble(text, type, typing=false) {
     let div = document.createElement("div");
     div.className = "bubble " + type;
@@ -153,38 +142,19 @@ function heartEffect(btn) {
         let heart = document.createElement("div");
         heart.className = "heart";
         heart.innerText = "💓";
-        heart.style.left = Math.random() * 50 + "px";
+        heart.style.left = Math.random() * 40 + "px";
         btn.appendChild(heart);
-
         setTimeout(() => heart.remove(), 1000);
     }
 }
 
-// 🎵 fade in เพลง
-function playMusic() {
-    let audio = document.getElementById("bgm");
-    audio.volume = 0;
-    audio.play();
-
-    let vol = 0;
-    let fade = setInterval(() => {
-        if (vol < 1) {
-            vol += 0.05;
-            audio.volume = vol;
-        } else {
-            clearInterval(fade);
-        }
-    }, 200);
-}
-
 // 🔥 ข้อความแรก
-window.onload = function() {
+window.onload = () => {
     addBubble("ตอนนี้มันหนักแค่ไหน...เล่าให้เราฟังได้นะ 🤍", "bot", true);
 };
 
-let sent = false;
-
-function send(btn) {
+// 🚀 ฟังก์ชันส่ง
+window.send = async function(btn) {
     let text = document.getElementById("input").value.trim();
     if (!text) return;
 
@@ -192,6 +162,17 @@ function send(btn) {
     document.getElementById("input").value = "";
 
     heartEffect(btn);
+
+    try {
+        // 🔥 เซฟ Firebase
+        await addDoc(collection(db, "messages"), {
+            message: text,
+            time: new Date()
+        });
+        console.log("บันทึกแล้ว");
+    } catch (e) {
+        console.log("Firebase error:", e);
+    }
 
     setTimeout(() => {
         addBubble(
@@ -201,16 +182,10 @@ function send(btn) {
         );
 
         document.getElementById("nextBtn").style.display = "block";
-
     }, 500);
-
-    if (!sent) {
-        playMusic();
-        sent = true;
-    }
 }
 
-function goNext() {
+window.goNext = function() {
     window.location.href = "page2.html";
 }
 </script>
