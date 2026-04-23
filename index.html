@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>For You 🤍</title>
+</head>
+
+<body>
+
+<h3>ที่ตรงนี้มีแค่เธอกับเรา 🤍</h3>
+
+<textarea id="input" placeholder="พิมพ์..."></textarea>
+<br><br>
+<button onclick="reply()">ส่งให้เรา</button>
+
+<p id="response"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+console.log("RUN OK");
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCquKO0dfib9VPLiVw8VoMglElIaaT65Pc",
+  authDomain: "for-you-78a52.firebaseapp.com",
+  projectId: "for-you-78a52"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.reply = async function() {
+    let text = document.getElementById("input").value;
+
+    if (text.trim() !== "") {
+        await addDoc(collection(db, "messages"), {
+            message: text,
+            time: new Date()
+        });
+    }
+
+    document.getElementById("response").innerText = "ส่งแล้วนะ 🤍";
+}
+</script>
+
+</body>
+</html>
